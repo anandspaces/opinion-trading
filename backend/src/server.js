@@ -1,22 +1,19 @@
 import { createServer } from 'http';
-import app from './app';
 import { init } from './services/socketService';
-import { info } from './utils/logger';
-
-import express, { json } from 'express';
+import { info,error } from './utils/logger';
+import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import eventRoutes from './routes/eventRoutes';
 import tradeRoutes from './routes/tradeRoutes';
 import adminRoutes from './routes/adminRoutes';
-import { error } from './utils/logger';
 
 const app = express();
 
 // Middleware
 app.use(cors());
-app.use(json());
+app.use(express.json());
 
 // Database connection
 connectDB();
@@ -32,8 +29,6 @@ app.use((err, req, res, next) => {
   error(err.stack);
   res.status(500).send('Server Error');
 });
-
-export default app;
 
 const PORT = process.env.PORT || 5000;
 
