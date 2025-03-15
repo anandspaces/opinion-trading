@@ -1,5 +1,4 @@
-import { verify } from 'jsonwebtoken';
-import { error as _error } from './logger';
+import pkg from 'jsonwebtoken';
 
 const auth = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -7,11 +6,11 @@ const auth = (req, res, next) => {
   if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
 
   try {
-    const decoded = verify(token, process.env.JWT_SECRET);
+    const decoded = pkg.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
-    _error(`Token verification failed: ${error.message}`);
+    console.error(`Token verification failed: ${error.message}`);
     res.status(401).json({ message: 'Token is not valid' });
   }
 };

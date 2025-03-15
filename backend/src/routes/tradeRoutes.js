@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { placeTrade, getUserTrades } from '../controllers/tradeController';
-import { auth } from '../utils/authMiddleware';
+import { placeTrade, getUserTrades } from '../controllers/tradeController.js';
+import { auth } from '../utils/authMiddleware.js';
 const router = Router();
 
 router.post('/', auth, placeTrade);

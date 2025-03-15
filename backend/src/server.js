@@ -1,13 +1,12 @@
 import { createServer } from 'http';
-import { init } from './services/socketService';
-import { info,error } from './utils/logger';
+import { init } from './services/socketService.js';
 import express from 'express';
 import cors from 'cors';
-import connectDB from './config/db';
-import authRoutes from './routes/authRoutes';
-import eventRoutes from './routes/eventRoutes';
-import tradeRoutes from './routes/tradeRoutes';
-import adminRoutes from './routes/adminRoutes';
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
+import tradeRoutes from './routes/tradeRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 
@@ -26,7 +25,7 @@ app.use('/api/admin', adminRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
-  error(err.stack);
+  console.log(err.stack);
   res.status(500).send('Server Error');
 });
 
@@ -36,5 +35,5 @@ const server = createServer(app);
 init(server);
 
 server.listen(PORT, () => {
-  info(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

@@ -1,9 +1,9 @@
-import socketIO from 'socket.io';
+import { Server } from "socket.io";
 
 let io;
 
 const init = (server) => {
-  io = socketIO(server, {
+  io = new Server(server, {
     cors: {
       origin: '*',
       methods: ['GET', 'POST']
@@ -24,4 +24,4 @@ const getIO = () => {
   return io;
 };
 
-export default { init, getIO };
+export { init, getIO };

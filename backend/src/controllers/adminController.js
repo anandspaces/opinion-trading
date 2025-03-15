@@ -1,13 +1,13 @@
-import { find, findById } from '../models/User';
-import { find as _find } from '../models/Trade';
-import { error as _error } from '../utils/logger';
+import User from '../models/User.js';
+import Trade from '../models/Trade.js';
+import Event from '../models/Event.js';
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await find().select('-password');
+    const users = await User.find().select('-password');
     res.json(users);
   } catch (error) {
-    _error(error.message);
+    console.error(error.message);
     res.status(500).send('Server Error');
   }
 };
@@ -15,10 +15,10 @@ const getAllUsers = async (req, res) => {
 const settleEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
-    const trades = await _find({ event: event._id, status: 'open' });
+    const trades = await Trade.find({ event: event._id, status: 'open' });
 
     for (const trade of trades) {
-      const user = await findById(trade.user);
+      const user = await User.findById(trade.user);
       if (event.outcome === trade.outcome) {
         user.balance += trade.amount * 2; // Assuming 1:1 payout
         trade.status = 'won';
@@ -32,9 +32,9 @@ const settleEvent = async (req, res) => {
     req.app.get('io').emit('event_settled', event);
     res.json({ message: 'Event settled successfully' });
   } catch (error) {
-    _error(error.message);
+    console.error(error.message);
     res.status(500).send('Server Error');
   }
 };
 
-export default { getAllUsers, settleEvent };
+export { getAllUsers, settleEvent };

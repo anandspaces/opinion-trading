@@ -1,18 +1,17 @@
-import Trade, { find } from '../models/Trade';
-import { findById } from '../models/Event';
-import { findById as _findById } from '../models/User';
-import { error as _error } from '../utils/logger';
+import Trade from '../models/Trade.js';
+import Event from '../models/Event.js';
+import User from '../models/User.js';
 
 const placeTrade = async (req, res) => {
   try {
     const { eventId, amount, outcome } = req.body;
-    const event = await findById(eventId);
+    const event = await Event.findById(eventId);
     
     if (!event || event.status !== 'live') {
       return res.status(400).json({ message: 'Event not available for trading' });
     }
 
-    const user = await _findById(req.user.id);
+    const user = await User.findById(req.user.id);
     if (user.balance < amount) {
       return res.status(400).json({ message: 'Insufficient balance' });
     }
@@ -32,19 +31,19 @@ const placeTrade = async (req, res) => {
     req.app.get('io').emit('new_trade', trade);
     res.status(201).json(trade);
   } catch (error) {
-    _error(error.message);
+    console.error(error.message);
     res.status(500).send('Server Error');
   }
 };
 
 const getUserTrades = async (req, res) => {
   try {
-    const trades = await find({ user: req.user.id }).populate('event');
+    const trades = await Trade.find({ user: req.user.id }).populate('event');
     res.json(trades);
   } catch (error) {
-    _error(error.message);
+    console.error(error.message);
     res.status(500).send('Server Error');
   }
 };
 
-export default { placeTrade, getUserTrades };
+export { placeTrade, getUserTrades };
