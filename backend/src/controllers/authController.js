@@ -1,23 +1,56 @@
 import { genSalt, hash, compare } from 'bcryptjs';
-import pkg from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+
+const validatePassword = (password) => {
+  const minLength = 6;
+  if (password.length < minLength) {
+    throw new Error(`Password must be at least ${minLength} characters`);
+  }
+};
+
+const authResponse = (user) => {
+  const token = jwt.sign(
+    { id: user._id, role: user.role }, 
+    process.env.JWT_SECRET, 
+    { expiresIn: '1h' }
+  );
+
+  return {
+    token,
+    user: {
+      id: user._id,
+      username: user.username,
+      role: user.role,
+      balance: user.balance
+    }
+  };
+};
+
 
 const register = async (req, res) => {
   try {
     const { username, password, role = 'user' } = req.body;
     
-    let user = await User.findOne({ username });
-    if (user) return res.status(400).json({ message: 'User already exists' });
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
+
+    validatePassword(password);
 
     const salt = await genSalt(10);
     const hashedPassword = await hash(password, salt);
 
-    user = new User({ username, password: hashedPassword, role, balance: 1000 });
-    await user.save();
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+      role: 'user',
+      balance: 1000
+    });
 
-    const token = pkg.sign({ id: user._id, role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    
-    res.status(201).json({ token });
+    await newUser.save();
+    res.status(201).json(authResponse(newUser));
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server Error');
@@ -30,11 +63,15 @@ const login = async (req, res) => {
     const user = await User.findOne({ username });
     
     if (!user || !(await compare(password, user.password))) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
+    const isMatch = await compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    res.json(authResponse(user));
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server Error');

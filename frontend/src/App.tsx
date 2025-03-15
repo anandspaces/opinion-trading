@@ -4,7 +4,7 @@ import axios from 'axios';
 import EventsList from './components/EventsList';
 import TradeForm from './components/TradeForm';
 import AdminPanel from './components/AdminPanel';
-import LoginForm from './components/LoginForm';
+import AuthForm from './components/AuthForm';
 import { User, Event } from './types/types';
 
 const App = () => {
@@ -37,6 +37,16 @@ const App = () => {
     ));
   };
 
+  // Update user state after auth
+  const handleAuthSuccess = (userData: User) => {
+    setUser({
+      _id: userData._id,
+      username: userData.username,
+      role: userData.role,
+      balance: userData.balance
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -61,7 +71,7 @@ const App = () => {
                   {user ? (
                     <TradeForm userId={user._id} events={events} />
                   ) : (
-                    <LoginForm onLogin={setUser} />
+                    <AuthForm onAuthSuccess={handleAuthSuccess} />
                   )}
                 </div>
               </div>

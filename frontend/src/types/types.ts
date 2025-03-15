@@ -25,3 +25,13 @@ export interface User {
   role: 'user' | 'admin';
   balance: number;
 }
+
+export interface AuthFormProps {
+  onAuthSuccess: (user: User) => void;
+}
+
+export interface AuthCredentials {
+  username: string;
+  password: string;
+  passwordConfirm?: string;
+}
