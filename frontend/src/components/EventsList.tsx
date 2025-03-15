@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { Event } from '../types/types';
 
 interface EventsListProps {
-  events: Event[];
+  events: Event[] | null | undefined;
   onEventUpdate: (updatedEvent: Event) => void;
 }
 
@@ -19,6 +19,14 @@ const EventsList = ({ events, onEventUpdate }: EventsListProps) => {
       socket.disconnect();
     };
   }, [onEventUpdate]);
+
+  if (!events || !Array.isArray(events)) {
+    return (
+      <div className="text-center text-gray-500">
+        No events available.
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
