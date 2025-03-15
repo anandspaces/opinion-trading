@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import tradeRoutes from './routes/tradeRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import 'dotenv/config'
 
 const app = express();
 
