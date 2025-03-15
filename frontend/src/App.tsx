@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import axios from 'axios';
+import EventsList from './components/EventsList.tsx';
+import TradeForm from './components/TradeForm.tsx';
+import AdminPanel from './components/AdminPanel.tsx';
+import { User, Event } from './types/types';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const [eventsRes] = await Promise.all([
+          axios.get<Event[]>('http://localhost:5000/api/events')
+        ]);
+        setEvents(eventsRes.data);
+      } catch (err) {
+        console.error('Initial data fetch failed:', err);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        <Route path="/" element={
+          <div className="container">
+            <h1>Trading Platform</h1>
+            <EventsList events={events} />
+            {user && <TradeForm userId={user._id} />}
+          </div>
+        } />
+        <Route path="/admin" element={<AdminPanel />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+export default App;
