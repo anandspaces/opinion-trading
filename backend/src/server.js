@@ -11,8 +11,15 @@ import 'dotenv/config'
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || '*', // Allow requests from frontend URL (fallback to all)
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Allow cookies and authorization headers
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // Database connection

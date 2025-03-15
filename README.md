@@ -7,6 +7,7 @@ A full-stack application for trading opinions on real-world events with real-tim
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Docker Setup](#docker-setup)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
@@ -75,7 +76,41 @@ Create a `.env` file in the `backend/` directory and add the following:
 ```ini
 JWT_SECRET=your_jwt_secret
 MONGODB_URI=your_mongodb_uri
+FRONTEND_URL=your_frontend_url
 PORT=5000
+```
+
+## Docker Setup (Optional)
+
+Ensure you have [Docker](https://www.docker.com/) installed on your machine.
+
+### Build and Run Containers
+```bash
+docker-compose up --build
+```
+
+### Stopping Containers
+```bash
+docker-compose down
+```
+
+### Running in Detached Mode
+```bash
+docker-compose up -d
+```
+
+### Docker Files Structure
+```plaintext
+backend/
+├── Dockerfile       # Docker setup for backend
+├── .dockerignore    # Ignored files for backend container
+
+frontend/
+├── Dockerfile       # Docker setup for frontend
+├── .dockerignore    # Ignored files for frontend container
+
+root/
+├── docker-compose.yml  # Docker Compose for managing services
 ```
 
 ## Project Structure

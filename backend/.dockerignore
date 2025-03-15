@@ -1,0 +1,25 @@
+# Node.js dependencies
+node_modules/
+
+# Test files
+*.test.js
+*.spec.js
+
+# Logs
+*.log
+
+# Git-specific
+.git
+.gitignore
+
+# IDE/Editor folders
+.vscode/
+.idea/
+
+# Build output
+/dist
+/build
+
+# Miscellaneous
+coverage/
+vercel.json
